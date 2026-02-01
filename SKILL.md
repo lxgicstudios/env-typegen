@@ -1,125 +1,116 @@
 ---
-name: Environment Type Generator CLI
-description: Generate TypeScript types from .env files. Type-safe environment variables. Zod validation schemas. Free developer tool.
-tags: [env, typescript, types, dotenv, validation, zod, cli]
+name: Env Typegen - TypeScript Types from .env
+description: Generate TypeScript types from .env files with smart inference. Type-safe environment variables. Optional Zod schema. Free CLI tool.
 ---
 
-# Environment Type Generator CLI
+# Env Typegen
 
-Type-safe env vars in TypeScript.
+Generate TypeScript types from your .env file. Smart type inference for numbers, booleans, URLs.
 
-**Generate types from .env. Never typo again.**
-
-## Quick Start
+## Installation
 
 ```bash
-npm install -g env-typegen
-```
-
-```bash
-# Generate types from .env
-env-typegen
-
-# Generate with validation
-env-typegen --zod
-
-# Watch mode
-env-typegen --watch
-```
-
-## What It Generates
-
-### TypeScript Types
-```typescript
-// Generated env.d.ts
-declare namespace NodeJS {
-  interface ProcessEnv {
-    DATABASE_URL: string;
-    API_KEY: string;
-    PORT?: string;
-    DEBUG?: string;
-  }
-}
-```
-
-### Zod Schema
-```typescript
-// Generated env.schema.ts
-import { z } from 'zod';
-
-export const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  API_KEY: z.string().min(1),
-  PORT: z.string().optional().default('3000'),
-  DEBUG: z.enum(['true', 'false']).optional(),
-});
+npm install -g @lxgicstudios/env-typegen
 ```
 
 ## Commands
 
+### Generate Types
+
 ```bash
-# Basic generation
-env-typegen
+npx @lxgicstudios/env-typegen
+npx @lxgicstudios/env-typegen .env.local
+npx @lxgicstudios/env-typegen -o src/types/env.d.ts
+```
 
-# From specific file
-env-typegen --env .env.production
+### With Zod Schema
 
-# Multiple files
-env-typegen --env .env,.env.local
-
-# Output location
-env-typegen -o ./src/types/env.d.ts
-
-# With Zod schema
-env-typegen --zod
-
-# Watch mode
-env-typegen --watch
-
-# Infer types from values
-env-typegen --infer
+```bash
+npx @lxgicstudios/env-typegen --zod
 ```
 
 ## Example
 
-**.env:**
-```
-DATABASE_URL=postgres://localhost:5432/db
-API_KEY=sk-123456
+Input `.env`:
+```env
+# Database
+DATABASE_URL=postgresql://localhost:5432/db
+DB_POOL_SIZE=10
+
+# Server
 PORT=3000
 DEBUG=true
+
+# API
+API_KEY=sk_live_abc123
 ```
 
-**Generated:**
+Output:
 ```typescript
-interface Env {
+export interface Env {
+  /** Database */
   DATABASE_URL: string;
+  DB_POOL_SIZE: number;
+  /** Server */
+  PORT: number;
+  DEBUG: boolean;
+  /** API */
   API_KEY: string;
-  PORT: string;
-  DEBUG: 'true' | 'false';
+}
+
+export function getEnv(): Env {
+  return {
+    DATABASE_URL: process.env.DATABASE_URL || '',
+    DB_POOL_SIZE: Number(process.env.DB_POOL_SIZE),
+    PORT: Number(process.env.PORT),
+    DEBUG: ['true', '1', 'yes'].includes(process.env.DEBUG?.toLowerCase() || ''),
+    API_KEY: process.env.API_KEY || '',
+  };
+}
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      DATABASE_URL: string;
+      DB_POOL_SIZE: string;
+      PORT: string;
+      DEBUG: string;
+      API_KEY: string;
+    }
+  }
 }
 ```
 
+## Type Inference
+
+| Pattern | Type |
+|---------|------|
+| `PORT=3000` | number |
+| `DEBUG=true` | boolean |
+| `API_URL=https://...` | string (URL) |
+| `EMAIL=a@b.com` | string (email) |
+| Everything else | string |
+
 ## Options
 
+| Option | Description |
+|--------|-------------|
+| `-i, --input` | Input file (default: .env) |
+| `-o, --output` | Output file (default: env.d.ts) |
+| `--zod` | Generate Zod schema too |
+| `--name` | Interface name (default: Env) |
+
+## Common Use Cases
+
+**Generate for project:**
 ```bash
-# Add prefix
-env-typegen --prefix NEXT_PUBLIC_
-
-# Required only
-env-typegen --required
-
-# Export as const
-env-typegen --const
+npx @lxgicstudios/env-typegen -o src/types/env.d.ts
 ```
 
-## When to Use This
-
-- TypeScript projects
-- Runtime validation
-- Onboarding new devs
-- Documentation
-- CI/CD validation
+**With runtime validation:**
+```bash
+npx @lxgicstudios/env-typegen --zod -o src/env.ts
+```
 
 ---
 
