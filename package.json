@@ -1,7 +1,7 @@
 {
   "name": "@lxgicstudios/env-typegen",
-  "version": "1.0.0",
-  "description": "Generate TypeScript types from .env files with smart type inference",
+  "version": "1.0.1",
+  "description": "Generate TypeScript types from .env files with smart type inference. Zero-config CLI tool.",
   "main": "dist/index.js",
   "bin": {
     "env-typegen": "./dist/cli.js"
@@ -11,27 +11,46 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "env",
-    "typescript",
-    "dotenv",
-    "type-safe",
-    "environment",
-    "config",
     "cli",
+    "config",
+    "developer-tools",
+    "dotenv",
+    "env",
+    "environment",
+    "generation",
+    "inference",
+    "nodejs",
     "npx",
-    "developer-tools"
+    "process-env",
+    "schema",
+    "type-safe",
+    "typegen",
+    "typescript",
+    "validation",
+    "variables",
+    "zero-config"
   ],
-  "author": "LXGIC Studios <lxgicstudios@gmail.com>",
+  "author": "LXGIC Studios <hello@lxgicstudios.com> (https://lxgicstudios.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxgicstudios/env-typegen"
+    "url": "git+https://github.com/lxgicstudios/env-typegen.git"
   },
   "homepage": "https://github.com/lxgicstudios/env-typegen#readme",
+  "bugs": {
+    "url": "https://github.com/lxgicstudios/env-typegen/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/lxgicstudios"
+  },
   "engines": {
     "node": ">=16.0.0"
   },
-  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["dist", "README.md"],
   "devDependencies": {
     "typescript": "^5.3.0",
     "@types/node": "^20.0.0"
